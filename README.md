@@ -1,6 +1,6 @@
 # `weather_app`
 
-This is a weather app that can let users check the weather of any city in the world. The app was developed in ICP using ReactJS as frontend and Motoko as backend.
+This is a weather app that can let users check the weather of any city in the world. The app was developed in ICP using ReactJS as frontend and Motoko as backend. You may deploy it on ICP maon net without the need to set up a proxy server.
 
 To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
 
