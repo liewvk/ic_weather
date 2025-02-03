@@ -4,6 +4,7 @@ import Blob "mo:base/Blob";
 import Cycles "mo:base/ExperimentalCycles";
 import Nat "mo:base/Nat";
 import Nat64 "mo:base/Nat64";
+import Iter "mo:base/Iter";
 
 actor class WeatherApp() = this {
     type HttpResponsePayload = {
@@ -27,11 +28,28 @@ actor class WeatherApp() = this {
         } -> async HttpResponsePayload;
     } = actor("aaaaa-aa");
 
+    // Function to encode URL parameters
+    private func encodeURIComponent(text: Text) : Text {
+        let iter = Text.toIter(text);
+        var encoded = "";
+        for (char in iter) {
+            let charText = Text.fromChar(char);
+            if (char == ' ') {
+                encoded #= "%20";
+            } else {
+                encoded #= charText;
+            }
+        };
+        encoded
+    };
+
     public shared func getWeather(city : Text) : async Text {
         let api_key = "49f3f34e3073ab7df457349d693c4380";
-        let url = "https://api.openweathermap.org/data/2.5/weather?q=" # city # "&appid=" # api_key # "&units=metric";
+        let encodedCity = encodeURIComponent(city);
+        let url = "https://api.openweathermap.org/data/2.5/weather?q=" # encodedCity # "&appid=" # api_key # "&units=metric";
 
         Debug.print("Fetching weather for: " # city);
+        Debug.print("Encoded URL: " # url);
         
         try {
             Cycles.add(2_000_000_000_000);
@@ -50,11 +68,12 @@ actor class WeatherApp() = this {
                     case null { "Error: Could not decode response" };
                 }
             } else {
-                "Error: HTTP status " # Nat.toText(response.status)
+                Debug.print("HTTP Error Status: " # Nat.toText(response.status));
+                "{\"error\": \"HTTP status " # Nat.toText(response.status) # "\"}"
             }
         } catch err {
             Debug.print("Error making HTTP request");
-            "Error: Failed to fetch weather data"
+            "{\"error\": \"Failed to fetch weather data\"}"
         }
     };
 
