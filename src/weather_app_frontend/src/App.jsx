@@ -1,6 +1,27 @@
 import React, { useState } from "react";
 import { weather_app_backend } from "../../declarations/weather_app_backend";
 
+const WeatherIcon = ({ condition }) => {
+    // Map weather conditions to emoji
+    const weatherEmojis = {
+        'Clear': '☀️',
+        'Clouds': '☁️',
+        'Rain': '🌧️',
+        'Drizzle': '🌦️',
+        'Thunderstorm': '⛈️',
+        'Snow': '🌨️',
+        'Mist': '🌫️',
+        'Fog': '🌫️',
+        'Haze': '🌫️',
+        'Dust': '🌫️',
+        'Smoke': '🌫️',
+        'default': '🌤️'
+    };
+
+    const emoji = weatherEmojis[condition] || weatherEmojis.default;
+    return <span className="weather-emoji" style={{ fontSize: '4rem' }}>{emoji}</span>;
+};
+
 const App = () => {
     const [city, setCity] = useState("");
     const [weather, setWeather] = useState(null);
@@ -48,13 +69,10 @@ const App = () => {
 
             {error && <p className="error">{error}</p>}
 
-            {weather && (
+            {weather && !weather.error && (
                 <div className="weather-info">
                     <h2>{weather.name}, {weather.sys.country}</h2>
-                    <img
-                        src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                        alt={weather.weather[0].description}
-                    />
+                    <WeatherIcon condition={weather.weather[0].main} />
                     <p className="temperature">{Math.round(weather.main.temp)}°C</p>
                     <p className="description">{weather.weather[0].description}</p>
                     <div className="details">
